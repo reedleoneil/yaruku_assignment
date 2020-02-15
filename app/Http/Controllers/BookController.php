@@ -24,8 +24,13 @@ class BookController extends Controller
         return view('book', ['books' => $books]);
     }
 
-    public function export(Excel $excel)
+    public function exportToExcel()
     {
-        return $excel->download(new BookExport, 'books.xlsx');
+        return (new BookExport)->download('books.csv', Excel::XLSX);
+    }
+
+    public function exportToCSV()
+    {
+        return (new BookExport)->download('books.csv', Excel::CSV);
     }
 }
