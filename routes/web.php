@@ -11,6 +11,7 @@
 |
 */
 
+Route::get('/export', 'BookController@export');
 Route::get('/api/getBooks', 'API\BookController@getBooks');
 Route::get('/api/getBook', 'API\BookController@getBook');
 Route::post('/api/insertBook', 'API\BookController@insertBook');
