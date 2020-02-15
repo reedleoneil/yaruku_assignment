@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/api/getBooks', 'API\BookController@getBooks');
+Route::get('/api/getBook', 'API\BookController@getBook');
+Route::post('/api/insertBook', 'API\BookController@insertBook');
+Route::post('/api/updateBook', 'API\BookController@updateBook');
+Route::post('/api/deleteBook', 'API\BookController@deleteBook');
