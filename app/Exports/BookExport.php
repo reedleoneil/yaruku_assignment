@@ -2,17 +2,7 @@
 
 namespace App\Exports;
 
- use App\Models\Book;
-// use Maatwebsite\Excel\Concerns\FromCollection;
-//
-// class BookExport implements FromCollection
-// {
-//     public function collection()
-//     {
-//         return Book::all();
-//     }
-// }
-
+use App\Models\Book;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -29,17 +19,37 @@ class BookExport implements FromQuery, WithMapping, WithHeadings
 
     public function map($book): array
     {
-        return [
-            $book->title,
-            $book->author
-        ];
+        $columns = [];
+
+        if ($this->withTitle == true)
+          array_push($columns, $book->title);
+        if ($this->withAuthor == true)
+          array_push($columns, $book->author);
+
+        return $columns;
     }
 
     public function headings(): array
     {
-        return [
-            'Title',
-            'Author'
-        ];
+        $headers = [];
+
+        if ($this->withTitle == true)
+          array_push($headers, 'Title');
+        if ($this->withAuthor == true)
+          array_push($headers, 'Author');
+
+        return [$headers];
+    }
+
+    public function withTitle(bool $flag)
+    {
+        $this->withTitle = $flag;
+        return $this;
+    }
+
+    public function withAuthor(bool $flag)
+    {
+        $this->withAuthor = $flag;
+        return $this;
     }
 }

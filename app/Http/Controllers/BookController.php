@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\BookRepository;
-
+use Illuminate\Http\Request;
 use App\Exports\BookExport;
 use Maatwebsite\Excel\Excel;
 
@@ -24,13 +24,17 @@ class BookController extends Controller
         return view('book', ['books' => $books]);
     }
 
-    public function exportToExcel()
+    public function exportToExcel(Request $request, Excel $excel)
     {
-        return (new BookExport)->download('books.csv', Excel::XLSX);
+        return (new BookExport)->withTitle(boolval($request->input('withTitle')))
+                               ->withAuthor(boolval($request->input('withAuthor')))
+                               ->download('books.xlsx', Excel::XLSX);
     }
 
-    public function exportToCSV()
+    public function exportToCSV(Request $request)
     {
-        return (new BookExport)->download('books.csv', Excel::CSV);
+        return (new BookExport)->withTitle(boolval($request->input('withTitle')))
+                               ->withAuthor(boolval($request->input('withAuthor')))
+                               ->download('books.csv', Excel::CSV);
     }
 }
