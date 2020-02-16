@@ -11,6 +11,7 @@
 |
 */
 
+Route::get('/', 'BookController@index');
 Route::get('/exportToExcel', 'BookController@exportToExcel');
 Route::get('/exportToCSV', 'BookController@exportToCSV');
 Route::get('/api/getBooks', 'API\BookController@getBooks');
