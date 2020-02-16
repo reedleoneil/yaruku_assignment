@@ -93,7 +93,7 @@
     </b-table>
 
     <!-- Info modal -->
-    <b-modal :id="infoModal.id" :title="infoModal.title" @hide="resetInfoModal" @ok="updateBook(infoModal.content, $event.target)">
+    <b-modal :id="infoModal.id" :title="infoModal.title" ok-title="Save" @hide="resetInfoModal" @ok="updateBook(infoModal.content, $event.target)">
       <b-form-input v-model="infoModal.content.author" placeholder=""></b-form-input>
     </b-modal>
   </b-container>
@@ -103,20 +103,20 @@
   export default {
     data() {
       return {
-        items: [
-          { title: 'test', author: 'testy' }
-        ],
+        // Table
+        items: [],
         fields: [
           { key: 'title', label: 'Title', sortable: true },
           { key: 'author', label: 'Author', sortable: true },
           { key: 'actions', label: 'Actions' }
         ],
-        totalRows: 1,
+        totalRows: 0,
         sortBy: '',
         sortDesc: false,
         sortDirection: 'asc',
         filter: null,
         filterOn: [],
+        // Modal
         infoModal: {
           id: 'info-modal',
           title: '',
@@ -125,7 +125,11 @@
             title: '',
             author: ''
           }
-        }
+        },
+        // Alert
+        dismissSecs: 3,
+        dismissCountDown: 0,
+        variant: ''
       }
     },
     computed: {
@@ -140,9 +144,13 @@
     },
     mounted() {
       axios
-        .get('http://127.0.0.1:8000/api/getBooks')
+        .get('/api/getBooks')
         .then(response => (this.items = response.data.data))
       this.totalRows = this.items.length
+
+      this.$root.$on('bookAdded', (book) => {
+        this.items.push(book);
+      });
     },
     methods: {
       info(item, index, button) {
@@ -158,18 +166,29 @@
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
       },
+      makeToast(title, message, variant, append = true) {
+        this.toastCount++
+        this.$bvToast.toast(message, {
+          title: title,
+          autoHideDelay: 5000,
+          appendToast: append,
+          variant: variant
+        })
+      },
       deleteBook : deleteBook,
       updateBook: updateBook
     }
   }
 
   function deleteBook(item, button) {
+    var v = this;
     var items = this.items;
     axios.post('/api/deleteBook', {
       id: item.id
     })
       .then(function (response) {
-        items.pop(item);
+        v.makeToast('Success', 'Book deleted.', 'success');
+        items.splice(items.map(function(i) { return i.id; }).indexOf(item.id), 1);
       })
       .catch(function (error) {
         console.log(error);
@@ -177,6 +196,7 @@
   }
 
   function updateBook(item, button) {
+    var v = this;
     var items = this.items;
     axios.post('/api/updateBook', {
       id: item.id,
@@ -184,6 +204,7 @@
       author: item.author
     })
       .then(function (response) {
+        v.makeToast('Success', 'Book updated.', 'success');
         items.find(i => i.id == item.id).author = item.author;
       })
       .catch(function (error) {

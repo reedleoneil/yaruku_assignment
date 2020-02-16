@@ -10,31 +10,32 @@ use Maatwebsite\Excel\Excel;
 
 class BookController extends Controller
 {
-    protected $bookRepository;
-    private $excel;
+  protected $bookRepository;
+  private $excel;
 
-    public function __construct(BookRepository $bookRepository)
-    {
-        $this->bookRepository = $bookRepository;
-    }
+  public function __construct(BookRepository $bookRepository)
+  {
+    $this->bookRepository = $bookRepository;
+  }
 
-    public function index()
-    {
-        $books = $this->bookRepository->getBooks();
-        return view('book', ['books' => $books]);
-    }
+  public function index()
+  {
+    return view('book');
+  }
 
-    public function exportToExcel(Request $request, Excel $excel)
-    {
-        return (new BookExport)->withTitle(boolval($request->input('withTitle')))
-                               ->withAuthor(boolval($request->input('withAuthor')))
-                               ->download('books.xlsx', Excel::XLSX);
-    }
+  public function exportToExcel(Request $request)
+  {
+    return (new BookExport)->withTitle(boolval($request->input('withTitle')))
+                           ->withAuthor(boolval($request->input('withAuthor')))
+                           ->withHeaders(boolval($request->input('withHeaders')))
+                           ->download('books.xlsx', Excel::XLSX);
+  }
 
-    public function exportToCSV(Request $request)
-    {
-        return (new BookExport)->withTitle(boolval($request->input('withTitle')))
-                               ->withAuthor(boolval($request->input('withAuthor')))
-                               ->download('books.csv', Excel::CSV);
-    }
+  public function exportToCSV(Request $request)
+  {
+    return (new BookExport)->withTitle(boolval($request->input('withTitle')))
+                           ->withAuthor(boolval($request->input('withAuthor')))
+                           ->withHeaders(boolval($request->input('withHeaders')))
+                           ->download('books.csv', Excel::CSV);
+  }
 }
