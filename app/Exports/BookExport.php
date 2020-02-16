@@ -10,46 +10,59 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class BookExport implements FromQuery, WithMapping, WithHeadings
 {
-    use Exportable;
+  use Exportable;
 
-    public function query()
+  protected $withHeaders;
+  protected $withTitle;
+  protected $withAuthor;
+
+  public function query()
+  {
+    return Book::query();
+  }
+
+  public function map($book): array
+  {
+    $columns = [];
+
+    if ($this->withTitle == true)
+      array_push($columns, $book->title);
+    if ($this->withAuthor == true)
+      array_push($columns, $book->author);
+
+    return $columns;
+  }
+
+  public function headings(): array
+  {
+    $headers = [];
+
+    if ($this->withHeaders == true)
     {
-        return Book::query();
+      if ($this->withTitle == true)
+      array_push($headers, 'Title');
+      if ($this->withAuthor == true)
+      array_push($headers, 'Author');
     }
 
-    public function map($book): array
-    {
-        $columns = [];
+    return [$headers];
+  }
 
-        if ($this->withTitle == true)
-          array_push($columns, $book->title);
-        if ($this->withAuthor == true)
-          array_push($columns, $book->author);
+  public function withTitle(bool $flag)
+  {
+    $this->withTitle = $flag;
+    return $this;
+  }
 
-        return $columns;
-    }
+  public function withAuthor(bool $flag)
+  {
+    $this->withAuthor = $flag;
+    return $this;
+  }
 
-    public function headings(): array
-    {
-        $headers = [];
-
-        if ($this->withTitle == true)
-          array_push($headers, 'Title');
-        if ($this->withAuthor == true)
-          array_push($headers, 'Author');
-
-        return [$headers];
-    }
-
-    public function withTitle(bool $flag)
-    {
-        $this->withTitle = $flag;
-        return $this;
-    }
-
-    public function withAuthor(bool $flag)
-    {
-        $this->withAuthor = $flag;
-        return $this;
-    }
+  public function withHeaders(bool $flag)
+  {
+    $this->withHeaders = $flag;
+    return $this;
+  }
 }
